@@ -1,8 +1,5 @@
-from enum import StrEnum, auto
+from enum import Enum
 
-
-class User(StrEnum):
-    STANDARD_USER = auto()
-    LOCKED_OUT_USER = auto()
-    PROBLEM_USER = auto()
-    PERFORMANCE_GLITCH_USER = auto()
+class User(str, Enum):
+    STANDARD_USER = "standard_user"
+    LOCKED_USER = "locked_out_user"
