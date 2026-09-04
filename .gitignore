@@ -1,16 +1,24 @@
 # 虚拟环境
 venv/
 *.venv
+.env/
+.venv/
 
 # pytest缓存
 .pytest_cache/
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
 
 # allure报告输出
 allure-results/
 allure-report/
+
+# python打包产物
+*.egg-info/
+dist/
+build/
 
 # 系统文件
 .DS_Store
@@ -20,3 +28,5 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+*.swp
+*.swo
