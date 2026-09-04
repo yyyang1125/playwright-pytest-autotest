@@ -2,6 +2,9 @@ from typing import Union
 import allure
 from playwright.sync_api import Page
 from src.enums.User import User
+from config.config import BASE_URL, PAGE_TIMEOUT, GOTO_TIMEOUT
+
+
 
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.story("Login page behavior")
@@ -17,13 +20,13 @@ class LoginPage:
     @allure.step("Navigate to login page")
     def goto_login(self):
         """跳转到登录页面"""
-        self.page.goto("https://www.saucedemo.com/", timeout=15000)
+        self.page.goto(f"{BASE_URL}/", timeout=GOTO_TIMEOUT)
         self.page.wait_for_load_state("networkidle")
         print(f"DEBUG 当前页面url: {self.page.url}")
 
     @allure.step("Login with username {username} and password {password}")
     def login(self, username: Union[User, str], password: str):
-        self.user_name_field.wait_for(state="visible", timeout=8000)
+        self.user_name_field.wait_for(state="visible", timeout=PAGE_TIMEOUT)
         if hasattr(username, "value"):
             self.user_name_field.fill(username.value)
         else:

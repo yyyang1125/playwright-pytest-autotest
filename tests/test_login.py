@@ -1,35 +1,33 @@
 import pytest
 import allure
+from src.enums.User import User
+from config.config import PAGE_TIMEOUT
 
 
 @allure.story("登录功能")
 @pytest.mark.regression
 def test_login_success(login_page):
-    """正向：正常账号登录成功"""
+    """正向：正常账号登录成功（使用枚举）"""
     login_page.goto_login()
-    login_page.login("standard_user", "secret_sauce")
+    login_page.login(User.STANDARD_USER, "secret_sauce")
     # 登录成功后跳转inventory页面
-    login_page.page.wait_for_url("**/inventory.html", timeout=8000)
+    login_page.page.wait_for_url("**/inventory.html", timeout=PAGE_TIMEOUT)
+
+
+# 参数化异常登录数据集：(用户名,密码,预期错误文案)
+login_error_cases = [
+    ("", "secret_sauce", "Username is required"),
+    ("standard_user", "wrong_password", "Username and password do not match"),
+]
 
 
 @allure.story("登录功能")
 @pytest.mark.regression
-def test_login_wrong_password(login_page):
-    """反向：密码错误，校验错误提示"""
+@pytest.mark.parametrize("username,password,expect_err_msg", login_error_cases)
+def test_login_failed_param(login_page, username, password, expect_err_msg):
+    """数据驱动：登录异常场景"""
     login_page.goto_login()
-    login_page.login("standard_user", "wrong_password")
-    # 获取错误提示元素
+    login_page.login(username, password)
     error_msg = login_page.page.locator("[data-test='error']")
-    error_msg.wait_for(state="visible", timeout=8000)
-    assert "Username and password do not match" in error_msg.text_content()
-
-
-@allure.story("登录功能")
-@pytest.mark.regression
-def test_login_empty_username(login_page):
-    """反向：用户名为空，校验错误提示"""
-    login_page.goto_login()
-    login_page.login("", "secret_sauce")
-    error_msg = login_page.page.locator("[data-test='error']")
-    error_msg.wait_for(state="visible", timeout=8000)
-    assert "Username is required" in error_msg.text_content()
+    error_msg.wait_for(state="visible", timeout=PAGE_TIMEOUT)
+    assert expect_err_msg in error_msg.text_content()
